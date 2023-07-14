@@ -5,6 +5,7 @@ DOMAIN: Final = "qbittorrent-ha"
 
 DEFAULT_NAME = "qBittorrent"
 DEFAULT_URL = "http://127.0.0.1:8080"
+DEFAULT_SENSOR_SCAN_INTERVAL = timedelta(seconds=60)
 DEFAULT_EVENT_SCAN_INTERVAL = timedelta(seconds=10)
 
 """Maybe this should live elsewhere?  Closer to the functions that need to know this, for example the event or sensor py?
@@ -20,12 +21,12 @@ TORRENT_STATES: dict[str, str] = {
     "allocating": "Torrent is being allocated disk space",
     "downloading": "Torrent is downloading",
     "metaDL": "Torrent is fetching metadata",
-    "pausedDL": "Torrent is downloading but has been paused",
-    "queuedDL": "en",
-    "stalledDL": "za",
-    "checkingDL": "za",
-    "forcedDL": "za",
-    "checkingResumeData": "za",
-    "moving": "za",
-    "unknown": "za",
+    "pausedDL": "Torrent was downloading but has been paused",
+    "queuedDL": "Torrent is queued and is waiting to start downloading",
+    "stalledDL": "Torrent is waiting to download but there are no peer connections",
+    "checkingDL": "Torrent is being checked but has not finished downloading",
+    "forcedDL": "Torrent has been forced to start downloading",
+    "checkingResumeData": "Torrent is checking its resume data",
+    "moving": "Torrent is being moved",
+    "unknown": "Torrent is in an unknown state",
     }
