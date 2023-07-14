@@ -4,17 +4,13 @@ from typing import TypedDict
 
 
 class qTorrent(TypedDict):
-    box_art_url: str
-    normal_price: str | None
-    nsuid: int
-    percent_off: float
-    sale_price: str | None
-    title: str
+    added_on: int
+    completion_on: int
+    eta: int
+    hash: str
+    name: str
+    progress: float
+    size: int
+    state: string
 
-
-class ResultsDict(TypedDict):
-    games: dict[int, SwitchGame]
-    num_pages: int
-
-
-EShopResults = dict[int, SwitchGame]
+qTorrentResults = dict[int, qTorrent]
