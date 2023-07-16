@@ -83,26 +83,11 @@ class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             self._async_abort_entries_match({CONF_URL: user_input[CONF_URL]})   #### what is this?   only just copied and pasted this section, lots to change still
             try:
-                await self.hass.async_add_executor_job(
-                    setup_client,
-                    user_input[CONF_URL],
-                    user_input[CONF_USERNAME],
-                    user_input[CONF_PASSWORD],
-                    user_input[CONF_VERIFY_SSL],
-                )
-            except LoginRequired:
-                errors = {"base": "invalid_auth"}
-            except RequestException:
-                errors = {"base": "cannot_connect"}
-            else:
-
-                #Show the next page of the config flow
-                return await self.async_step_events()
-                
+                #Just go straight to creating the entry
                 return self.async_create_entry(title=DEFAULT_NAME, data=user_input)
 
-        schema = self.add_suggested_values_to_schema(USER_DATA_SCHEMA, user_input)
-        return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
+        schema = self.add_suggested_values_to_schema(USER_EVENTS_SCHEMA, user_input)
+        return self.async_show_form(step_id="events", data_schema=schema, errors=errors)
    
 
     async def async_step_import(self, config: dict[str, Any]) -> FlowResult:
