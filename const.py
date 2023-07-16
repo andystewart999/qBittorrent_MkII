@@ -3,9 +3,9 @@ from typing import Final
 
 DOMAIN: Final = "qbittorrent-ha"
 EVENT_NAME = DOMAIN + "_event"
-CONF_EVENT_COMPLETE = DOMAIN + "_torrent_complete"
-CONF_EVENT_ADDED = DOMAIN + "_torrent_added"
-CONF_EVENT_REMOVED = DOMAIN + "_torrent_removed"
+CONF_EVENT_COMPLETE = "torrent_complete"
+CONF_EVENT_ADDED = "torrent_added"
+CONF_EVENT_REMOVED = "torrent_removed"
 
 DEFAULT_NAME = "qBittorrent"
 DEFAULT_URL = "http://127.0.0.1:8080"
