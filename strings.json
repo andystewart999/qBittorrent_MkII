@@ -8,6 +8,13 @@
           "url": "[%key:common::config_flow::data::url%]",
           "verify_ssl": "[%key:common::config_flow::data::verify_ssl%]"
         }
+      },
+      "event": {
+        "data": {
+          "complete": "A torrent is completed, i.e. finished downloading",
+          "added": "A torrent has been added.",
+          "removed": "A torrent has been removed",
+        }
       }
     },
     "error": {
