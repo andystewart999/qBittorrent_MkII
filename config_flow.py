@@ -32,6 +32,14 @@ USER_DATA_SCHEMA = vol.Schema(
     }
 )
 
+USER_EVENTS_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_EVENT_COMPLETE, default=DEFAULT_EVENT_COMPLETE): bool,
+        vol.Required(CONF_EVENT_ADDED, default=DEFAULT_EVENT_ADDED): bool,
+        vol.Required(CONF_EVENT_REMOVED, default=DEFAULT_EVENT_REMOVED): bool,
+    }
+)
+
 
 class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
     """Config flow for the qBittorrent integration."""
@@ -57,10 +65,45 @@ class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
             except RequestException:
                 errors = {"base": "cannot_connect"}
             else:
+
+                #Show the next page of the config flow
+                return await self.async_step_events()
+                
+                #return self.async_create_entry(title=DEFAULT_NAME, data=user_input)
+
+        schema = self.add_suggested_values_to_schema(USER_DATA_SCHEMA, user_input)
+        return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
+
+        async def async_step_events(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Second page of the config flow"""
+        errors = {}
+
+        if user_input is not None:
+            self._async_abort_entries_match({CONF_URL: user_input[CONF_URL]})   #### what is this?   only just copied and pasted this section, lots to change still
+            try:
+                await self.hass.async_add_executor_job(
+                    setup_client,
+                    user_input[CONF_URL],
+                    user_input[CONF_USERNAME],
+                    user_input[CONF_PASSWORD],
+                    user_input[CONF_VERIFY_SSL],
+                )
+            except LoginRequired:
+                errors = {"base": "invalid_auth"}
+            except RequestException:
+                errors = {"base": "cannot_connect"}
+            else:
+
+                #Show the next page of the config flow
+                return await self.async_step_events()
+                
                 return self.async_create_entry(title=DEFAULT_NAME, data=user_input)
 
         schema = self.add_suggested_values_to_schema(USER_DATA_SCHEMA, user_input)
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
+   
 
     async def async_step_import(self, config: dict[str, Any]) -> FlowResult:
         """Import a config entry from configuration.yaml."""
