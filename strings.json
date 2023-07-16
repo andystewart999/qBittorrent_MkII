@@ -11,9 +11,9 @@
       },
       "event": {
         "data": {
-          "complete": "A torrent is completed, i.e. finished downloading",
-          "added": "A torrent has been added.",
-          "removed": "A torrent has been removed",
+          "torrent_complete": "A torrent is completed, i.e. finished downloading",
+          "torrent_added": "A torrent has been added.",
+          "torrent_removed": "A torrent has been removed",
         }
       }
     },
