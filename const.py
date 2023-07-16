@@ -11,6 +11,9 @@ DEFAULT_NAME = "qBittorrent"
 DEFAULT_URL = "http://127.0.0.1:8080"
 DEFAULT_SENSOR_SCAN_INTERVAL = timedelta(seconds=60)
 DEFAULT_EVENT_SCAN_INTERVAL = timedelta(seconds=10)
+DEFAULT_EVENT_COMPLETE = True
+DEFAULT_EVENT_ADDED = False
+DEFAULT_EVENT_REMOVED = False
 
 """Maybe this should live elsewhere?  Closer to the functions that need to know this, for example the event or sensor py?
 TORRENT_STATES: dict[str, str] = {
