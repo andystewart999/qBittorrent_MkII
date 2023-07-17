@@ -1,5 +1,6 @@
 """Constants for qBittorrent-HA"""
 from typing import Final
+from datetime import timedelta
 
 DOMAIN: Final = "qbittorrent_ha"
 EVENT_NAME = DOMAIN + "_event"
