@@ -1,6 +1,6 @@
 {
   "domain": "qbittorrent_ha",
-  "name": "qBittorrent_HA",
+  "name": "qBittorrent MkII",
   "codeowners": ["@andystewart999"],
   "config_flow": true,
   "documentation": "https://github.com/andystewart999/qBittorrent_HA",
