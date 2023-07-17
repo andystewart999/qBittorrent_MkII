@@ -28,7 +28,7 @@ USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_URL, default=DEFAULT_URL): str,
         vol.Required(CONF_USERNAME): str,
         vol.Required(CONF_PASSWORD): str,
-        vol.Optional(CONF_VERIFY_SSL, default=True): bool,
+        vol.Optional(CONF_VERIFY_SSL, default=False): bool,
     }
 )
 
