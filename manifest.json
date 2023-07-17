@@ -1,5 +1,5 @@
 {
-  "domain": "qbittorrent-ha",
+  "domain": "qbittorrent_ha",
   "name": "qBittorrent-HA",
   "codeowners": ["@andystewart999"],
   "config_flow": true,
