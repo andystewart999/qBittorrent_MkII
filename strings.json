@@ -3,10 +3,10 @@
     "step": {
       "user": {
         "data": {
-          "username": "[%key:common::config_flow::data::username%]",
-          "password": "[%key:common::config_flow::data::password%]",
-          "url": "[%key:common::config_flow::data::url%]",
-          "verify_ssl": "[%key:common::config_flow::data::verify_ssl%]"
+          "username": "qBittorrent username",
+          "password": "qBittorrent password",
+          "url": "qBittorrent URL",
+          "verify_ssl": "Verify SSL?"
         }
       },
       "event": {
