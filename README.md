@@ -1,4 +1,4 @@
-# qBittorrent-HA
+# qBittorrent MkII
 My version of Home Assistant's built-in qBittorrent integration
 
 Adds the following capabilites:
