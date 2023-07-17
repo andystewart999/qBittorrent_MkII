@@ -15,7 +15,7 @@ DEFAULT_EVENT_COMPLETE = True
 DEFAULT_EVENT_ADDED = False
 DEFAULT_EVENT_REMOVED = False
 
-"""Maybe this should live elsewhere?  Closer to the functions that need to know this, for example the event or sensor py?
+"""Maybe this should live elsewhere?  Closer to the functions that need to know this, for example the event or sensor py?"""
 TORRENT_STATES: dict[str, str] = {
     "error": "An error occurred (applies to paused torrents)",
     "missingFiles": "At least one file in the torrent is misssing",
