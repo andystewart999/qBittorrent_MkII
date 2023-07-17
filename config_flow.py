@@ -74,7 +74,7 @@ class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
         schema = self.add_suggested_values_to_schema(USER_DATA_SCHEMA, user_input)
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
 
-        async def async_step_events(
+    async def async_step_events(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Second page of the config flow"""
