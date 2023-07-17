@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "username": "qBittorrent username",
+          "password": "qBittorrent password",
+          "url": "qBittorrent URL",
+          "verify_ssl": "Verify SSL?"
+        },
+        "title": "Login details"
+      },
+      "event": {
+        "data": {
+          "torrent_complete": "A torrent is completed, i.e. finished downloading",
+          "torrent_added": "A torrent has been added.",
+          "torrent_removed": "A torrent has been removed",
+        }.
+        "title": "Select events"
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect",
+      "invalid_auth": "Invalid username or password"
+    },
+    "abort": {
+      "already_configured": "This integration is alreayd configured"
+    }
+  }
+}
