@@ -1,7 +1,7 @@
 """Constants for qBittorrent-HA"""
 from typing import Final
 
-DOMAIN: Final = "qbittorrent-ha"
+DOMAIN: Final = "qbittorrent_ha"
 EVENT_NAME = DOMAIN + "_event"
 CONF_EVENT_COMPLETE = "torrent_complete"
 CONF_EVENT_ADDED = "torrent_added"
