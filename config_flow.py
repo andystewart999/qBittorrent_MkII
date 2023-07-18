@@ -14,7 +14,7 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_URL,
     CONF_USERNAME,
-    CONF_VERIFY_SSL,
+    CONF_VERIFY_SSL
 )
 from homeassistant.data_entry_flow import FlowResult
 
