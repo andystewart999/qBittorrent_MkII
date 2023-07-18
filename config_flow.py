@@ -18,7 +18,9 @@ from homeassistant.const import (
 )
 from homeassistant.data_entry_flow import FlowResult
 
-from .const import DEFAULT_NAME, DEFAULT_URL, DOMAIN
+#from .const import DEFAULT_NAME, DEFAULT_URL, DOMAIN
+from .const import *
+
 from .helpers import setup_client
 
 _LOGGER = logging.getLogger(__name__)
