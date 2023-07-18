@@ -69,15 +69,15 @@ class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
             else:
 
                 #Show the next page of the config flow
-                LOGGER.error('Showing config flow: events')
+                _LOGGER.error('Showing config flow: events')
                 return await self.async_step_events()
-                LOGGER.error('After async_step_events')
+                _LOGGER.error('After async_step_events')
                 #return self.async_create_entry(title=DEFAULT_NAME, data=user_input)
 
         #schema = self.add_suggested_values_to_schema(USER_DATA_SCHEMA, user_input)
-        LOGGER.error('Showing user form')
+        _LOGGER.error('Showing user form')
         return self.async_show_form(step_id="user", data_schema=USER_DATA_SCHEMA, errors=errors)
-        LOGGER.error('After async_show_form user')
+        _LOGGER.error('After async_show_form user')
 
     async def async_step_events(
         self, user_input: dict[str, Any] | None = None
@@ -89,14 +89,14 @@ class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
             self._async_abort_entries_match({CONF_URL: user_input[CONF_URL]})   #### what is this?   only just copied and pasted this section, lots to change still
             
             #Just go straight to creating the entry
-            LOGGER.error('async_create_entry')
+            _LOGGER.error('async_create_entry')
             return self.async_create_entry(title=DEFAULT_NAME, data=user_input)
-            LOGGER.error('After async_create_entry')
+            _LOGGER.error('After async_create_entry')
 
         #schema = self.add_suggested_values_to_schema(USER_EVENTS_SCHEMA, user_input)
-        LOGGER.error('Showing event form')
+        _LOGGER.error('Showing event form')
         return self.async_show_form(step_id="events", data_schema=USER_EVENTS_SCHEMA, errors=errors)
-        LOGGER.error('After async_show_form events')
+        _LOGGER.error('After async_show_form events')
    
 
     async def async_step_import(self, config: dict[str, Any]) -> FlowResult:
