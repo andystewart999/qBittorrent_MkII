@@ -8,8 +8,18 @@
           "url": "[%key:common::config_flow::data::url%]",
           "verify_ssl": "[%key:common::config_flow::data::verify_ssl%]"
         },
-        "title": "Title"
-      }
+        "title": "Title",
+        "description": "Description"
+      },
+      "event": {
+        "data": {
+          "torrent_complete": "[%key:common::config_flow::data::torrenT_complete%]",
+          "torrent_added": "[%key:common::config_flow::data::torrent_added%]",
+          "torrent_removed": "[%key:common::config_flow::data::torrent_removed%]"
+        },
+        "title": "Title2",
+        "description": "Description2"
+      },
     },
     "error": {
       "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
