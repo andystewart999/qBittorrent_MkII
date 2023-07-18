@@ -3,30 +3,19 @@
     "step": {
       "user": {
         "data": {
-          "username": "[%key:common::config_flow::data::username%]",
-          "password": "[%key:common::config_flow::data::password%]",
-          "url": "[%key:common::config_flow::data::url%]",
-          "verify_ssl": "[%key:common::config_flow::data::verify_ssl%]"
-        },
-        "title": "Title",
-        "description": "Description"
-      },
-      "event": {
-        "data": {
-          "torrent_complete": "[%key:common::config_flow::data::torrenT_complete%]",
-          "torrent_added": "[%key:common::config_flow::data::torrent_added%]",
-          "torrent_removed": "[%key:common::config_flow::data::torrent_removed%]"
-        },
-        "title": "Title2",
-        "description": "Description2"
-      },
+          "username": "USERNAME",
+          "password": "PASSWORD",
+          "url": "URL",
+          "verify_ssl": "VERIFY SSL"
+        }
+      }
     },
     "error": {
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]"
+      "cannot_connect": "Cannot connect",
+      "invalid_auth": "Invalid auth"
     },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "already_configured": "Already configured]"
     }
   }
 }
