@@ -6,3 +6,6 @@ Adds the following capabilites:
 - A pause/resume option for a specific torrent, or for all torrents
 - An additional sensor showing the overall percentage completion of all active torrents
 
+Todo:
+- Service to request information on a specific torrent via hash
+
