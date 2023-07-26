@@ -5,9 +5,10 @@ Adds the following capabilites:
 - An event is raised whenever a torrent is added, completed or removed (at the users' choice)
 
 Todo:
-- An additional sensor showing how many torrents are still in 'downloading' state
-- An additional sensor showing the overall percentage completion of all active torrents
-- A pause/resume service for a specific torrent, or for all torrents
-- Service to request information on a specific torrent via hash
-- Service to shut down qBitorrent
-
+- Additional optional sensors showing:
+    * How many torrents are still in 'downloading' state
+    * The highest ETA of all downloading torrents 
+- A control service supporting the following options:
+    * Pause/resume all torrents, or a specific torrent via an optional hash
+    * Return information on all torrents, or a specific torrent via an optional hash
+    * Shut down the remote qBittorrent client
