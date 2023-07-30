@@ -1,5 +1,6 @@
 """The qbittorrent component."""
-import logging
+#import logging
+from datetime import timedelta
 
 from qbittorrent.client import LoginRequired
 from requests.exceptions import RequestException
@@ -10,18 +11,18 @@ from homeassistant.const import (
     CONF_URL,
     CONF_USERNAME,
     CONF_VERIFY_SSL,
+    CONF_SCAN_INTERVAL,
     Platform,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN
+from .const import *
 from .helpers import setup_client
+from .events import QBEventsAndServices
 
 PLATFORMS = [Platform.SENSOR]
-
-_LOGGER = logging.getLogger(__name__)
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up qBittorrent from a config entry."""
@@ -34,12 +35,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             entry.data[CONF_PASSWORD],
             entry.data[CONF_VERIFY_SSL],
         )
+        
+        client: Client = hass.data[DOMAIN][entry.entry_id]
+        event_handler = QBEventsAndServices(hass, entry)
+
     except LoginRequired as err:
         raise ConfigEntryNotReady("Invalid credentials") from err
     except RequestException as err:
         raise ConfigEntryNotReady("Failed to connect") from err
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
     return True
 
 
