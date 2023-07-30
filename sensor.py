@@ -20,8 +20,10 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_URL,
     CONF_USERNAME,
+    CONF_SCAN_INTERVAL,
     STATE_IDLE,
     UnitOfDataRate,
+    UnitOfTime,
 )
 from homeassistant.core import DOMAIN as HOMEASSISTANT_DOMAIN, HomeAssistant
 from homeassistant.helpers import issue_registry as ir
@@ -30,12 +32,14 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
 from .const import DEFAULT_NAME, DOMAIN
-
-_LOGGER = logging.getLogger(__name__)
-
+from homeassistant.helpers.update_coordinator import (
+    DataUpdateCoordinator,
+)
 SENSOR_TYPE_CURRENT_STATUS = "current_status"
 SENSOR_TYPE_DOWNLOAD_SPEED = "download_speed"
 SENSOR_TYPE_UPLOAD_SPEED = "upload_speed"
+SENSOR_TYPE_DOWNLOADING_TOTAL = "downloading"
+SENSOR_TYPE_LONGEST_ETA = "eta"
 
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
@@ -57,6 +61,18 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DATA_RATE,
         native_unit_of_measurement=UnitOfDataRate.KIBIBYTES_PER_SECOND,
         state_class=SensorStateClass.MEASUREMENT,
+    ),
+    SensorEntityDescription(
+        key=SENSOR_TYPE_DOWNLOADING_TOTAL,
+        name="Downloading",
+        icon="mdi:file-cloud",
+        native_unit_of_measurement="torrents"
+    ),
+    SensorEntityDescription(
+        key=SENSOR_TYPE_LONGEST_ETA,
+        name="ETA",
+        icon="mdi:cloud-clock",
+        native_unit_of_measurement=UnitOfTime.SECONDS
     ),
 )
 
@@ -82,6 +98,9 @@ async def async_setup_platform(
             DOMAIN, context={"source": SOURCE_IMPORT}, data=config
         )
     )
+    
+    coordinator = hass.data[DOMAIN]["coordinator"]
+    
     ir.async_create_issue(
         hass,
         HOMEASSISTANT_DOMAIN,
@@ -141,11 +160,11 @@ class QBittorrentSensor(SensorEntity):
             data = self.client.sync_main_data()
             self._attr_available = True
         except RequestException:
-            _LOGGER.error("Connection lost")
+            LOGGER.error("Connection lost")
             self._attr_available = False
             return
         except LoginRequired:
-            _LOGGER.error("Invalid authentication")
+            LOGGER.error("Invalid authentication")
             return
 
         if data is None:
@@ -155,6 +174,7 @@ class QBittorrentSensor(SensorEntity):
         upload = data["server_state"]["up_info_speed"]
 
         sensor_type = self.entity_description.key
+        
         if sensor_type == SENSOR_TYPE_CURRENT_STATUS:
             if upload > 0 and download > 0:
                 self._attr_native_value = "up_down"
@@ -167,5 +187,23 @@ class QBittorrentSensor(SensorEntity):
 
         elif sensor_type == SENSOR_TYPE_DOWNLOAD_SPEED:
             self._attr_native_value = format_speed(download)
+        
         elif sensor_type == SENSOR_TYPE_UPLOAD_SPEED:
             self._attr_native_value = format_speed(upload)
+        
+        elif sensor_type == SENSOR_TYPE_DOWNLOADING_TOTAL:
+            torrents = data['torrents']
+            downloading = 0
+            for torrent in torrents:
+                if torrents[torrent]['state'][:-2] == 'DL' or torrents[torrent]['state'] == 'downloading':
+                    downloading += 1     
+            self._attr_native_value = downloading
+
+        elif sensor_type == SENSOR_TYPE_LONGEST_ETA:
+            torrents = data['torrents']
+            longest_eta = 0
+            for torrent in torrents:
+                if torrents[torrent]['eta'] > longest_eta and torrents[torrent]['eta'] != 8640000:
+                    longest_eta = torrents[torrent]['eta']
+            self._attr_native_value = longest_eta
+    
