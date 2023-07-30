@@ -1,0 +1,40 @@
+# Describes the format for the service calls
+
+service_get_torrent_info:
+  name: Get torrent info
+  description: Returns detailed torrent information on a specific torrent (if hash is set) or all torrents
+  fields:
+    hash:
+      name: hash
+      description: The hash associated with the torrent that should be returned
+      example: 0a861ed12bf4f16f67b9a747e149c7e6b1863e51
+      required: false
+      selector:
+        text:
+
+service_pause_downloads:
+  name: Pause downloads
+  description: Pause a specific torrent (if hash is set) or all torrents
+  fields:
+    hash:
+      name: hash
+      description: The hash associated with the torrent that should be paused
+      example: 0a861ed12bf4f16f67b9a747e149c7e6b1863e51
+      required: false
+      selector:
+        text:
+service_resume_downloads:
+  name: Resume downloads
+  description: Resume a specific torrent (if hash is set) or all torrents)
+  fields:
+    hash:
+      name: hash
+      description: The hash associated with the torrent that should be resumed
+      example: 0a861ed12bf4f16f67b9a747e149c7e6b1863e51
+      required: false
+      selector:
+        text:
+
+service_shutdown:
+    name: Shut down qBittorrent
+    description: Attempts to shut down the qBitorrent client
