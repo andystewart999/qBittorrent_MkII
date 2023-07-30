@@ -1,20 +1,35 @@
 """Constants for qBittorrent-HA"""
 from typing import Final
 from datetime import timedelta
+import voluptuous as vol
+import logging
 
 DOMAIN: Final = "qbittorrent_ha"
-EVENT_NAME = DOMAIN + "_event"
 CONF_EVENT_COMPLETE = "torrent_complete"
 CONF_EVENT_ADDED = "torrent_added"
 CONF_EVENT_REMOVED = "torrent_removed"
+CONF_EVENT_SCAN_INTERVAL= "event_scan_interval"
+
+#Events
+EVENT_COMPLETED = DOMAIN + "_" + CONF_EVENT_COMPLETE
+EVENT_ADDED = DOMAIN + "_" + CONF_EVENT_ADDED
+EVENT_REMOVED = DOMAIN + "_" + CONF_EVENT_REMOVED
 
 DEFAULT_NAME = "qBittorrent"
-DEFAULT_URL = "http://127.0.0.1:8080"
-DEFAULT_SENSOR_SCAN_INTERVAL = timedelta(seconds=60)
-DEFAULT_EVENT_SCAN_INTERVAL = timedelta(seconds=10)
+DEFAULT_URL = "http://192.168.1.233:8080"
+DEFAULT_SENSOR_SCAN_INTERVAL = 60
+DEFAULT_EVENT_SCAN_INTERVAL = 10
 DEFAULT_EVENT_COMPLETE = True
 DEFAULT_EVENT_ADDED = False
 DEFAULT_EVENT_REMOVED = False
+
+SERVICE_RESUME_DOWLOADS = 'service_resume_downloads'
+SERVICE_PAUSE_DOWLOADS = 'service_pause_downloads'
+SERVICE_GET_TORRENT_INFO = 'service_get_torrent_info'
+SERVICE_SHUTDOWN = 'service_shutdown'
+
+
+LOGGER = logging.getLogger(__package__)
 
 """Maybe this should live elsewhere?  Closer to the functions that need to know this, for example the event or sensor py?"""
 TORRENT_STATES: dict[str, str] = {
