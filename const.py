@@ -4,7 +4,7 @@ from datetime import timedelta
 import voluptuous as vol
 import logging
 
-DOMAIN: Final = "qbittorrent_MkII"
+DOMAIN: Final = "qbittorrent_mkii"
 CONF_EVENT_COMPLETE = "torrent_complete"
 CONF_EVENT_ADDED = "torrent_added"
 CONF_EVENT_REMOVED = "torrent_removed"
