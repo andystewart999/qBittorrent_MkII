@@ -12,5 +12,3 @@ Adds the following features:
     * Pause/resume all torrents, or a specific torrent via an optional hash
     * Return information on all torrents, or a specific torrent via an optional hash
     * Shut down the remote qBittorrent client (although the underlying API call doesn't work in my environment for some reason)
-
-Note that this custom integration replaces the built-in one.
