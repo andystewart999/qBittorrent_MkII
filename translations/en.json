@@ -14,10 +14,10 @@
         "data": {
           "torrent_complete": "A torrent is completed, i.e. finished downloading",
           "torrent_added": "A torrent has been added.",
-          "torrent_removed": "A torrent has been removed",
-        }.
+          "torrent_removed": "A torrent has been removed"
+        },
         "title": "Select events"
-      }
+      },
     },
     "error": {
       "cannot_connect": "Unable to connect",
