@@ -1,5 +1,5 @@
 {
-  "domain": "qbittorrent_MkII",
+  "domain": "qbittorrent_mkii",
   "name": "qBittorrent MkII",
   "codeowners": ["@andystewart999"],
   "config_flow": true,
