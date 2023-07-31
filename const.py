@@ -1,4 +1,4 @@
-"""Constants for qBittorrent-HA"""
+"""Constants for qBittorrent-MkII"""
 from typing import Final
 from datetime import timedelta
 import voluptuous as vol
