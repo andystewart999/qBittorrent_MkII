@@ -36,12 +36,20 @@ class QBEventsAndServices:
             return await self.hass.async_add_executor_job(get_torrent_info, self.client, hash)
 
         async def service_pause_downloads(call: ServiceCall):
-            await self.hass.async_add_executor_job(pause_downloads, self.client)
-            return
+            try:
+                hash = call.data.get('hash','all')
+            except Exception as err:
+                hash = 'all'
+
+            return await self.hass.async_add_executor_job(pause_downloads, self.client, hash)
         
         async def service_resume_downloads(call: ServiceCall):
-            await self.hass.async_add_executor_job(resume_downloads, self.client)
-            return
+            try:
+                hash = call.data.get('hash','all')
+            except Exception as err:
+                hash = 'all'
+
+            return await self.hass.async_add_executor_job(resume_downloads, self.client)
 
         async def service_shutdown(call: ServiceCall):
             await self.hass.async_add_executor_job(shutdown, self.client)
