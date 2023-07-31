@@ -10,7 +10,7 @@
         },
         "title": "Login details"
       },
-      "event": {
+      "events": {
         "data": {
           "torrent_complete": "A torrent is completed, i.e. finished downloading",
           "torrent_added": "A torrent has been added",
