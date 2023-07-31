@@ -63,12 +63,26 @@ def compare_torrents(client: Client):
  
     return completed_torrents, added_torrents, removed_torrents
 
-def pause_downloads(client: Client):
-    client.pause_all()
+def pause_downloads(client: Client, hash: str):
+    if hash != '' and hash != 'all':
+        try:
+            client.pause(hash)
+        except Exception as err:
+            pass
+    else:
+        client.pause_all()
+    
     return
 
-def resume_downloads(client: Client):
-    client.resume_all()
+def resume_downloads(client: Client, hash:str):
+    if hash != '' and hash != 'all':
+        try:
+            client.resume(hash)
+        except Exception as err:
+            pass
+    else:
+        client.resume_all()
+    
     return
 
 def get_torrent_info(client: Client, hash: str):
