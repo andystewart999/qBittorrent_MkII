@@ -1,10 +1,10 @@
-"""Constants for qBittorrent-MkII"""
+"""Constants for qBittorrent_MkII"""
 from typing import Final
 from datetime import timedelta
 import voluptuous as vol
 import logging
 
-DOMAIN: Final = "qbittorrent"
+DOMAIN: Final = "qbittorrent_MkII"
 CONF_EVENT_COMPLETE = "torrent_complete"
 CONF_EVENT_ADDED = "torrent_added"
 CONF_EVENT_REMOVED = "torrent_removed"
@@ -15,8 +15,8 @@ EVENT_COMPLETED = DOMAIN + "_" + CONF_EVENT_COMPLETE
 EVENT_ADDED = DOMAIN + "_" + CONF_EVENT_ADDED
 EVENT_REMOVED = DOMAIN + "_" + CONF_EVENT_REMOVED
 
-DEFAULT_NAME = "qBittorrent"
-DEFAULT_URL = "http://127.0.0.1:8080"
+DEFAULT_NAME = "qBittorrentTest"
+DEFAULT_URL = "http://192.168.1.233:8080"
 DEFAULT_SENSOR_SCAN_INTERVAL = 60
 DEFAULT_EVENT_SCAN_INTERVAL = 10
 DEFAULT_EVENT_COMPLETE = True
