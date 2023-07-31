@@ -23,6 +23,7 @@ service_pause_downloads:
       required: false
       selector:
         text:
+
 service_resume_downloads:
   name: Resume downloads
   description: Resume a specific torrent (if hash is set) or all torrents)
