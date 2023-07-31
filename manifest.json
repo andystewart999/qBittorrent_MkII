@@ -7,5 +7,5 @@
   "issue_tracker": "https://github.com/andystewart999/qBittorrent_HA/issues",
   "iot_class": "local_polling",
   "requirements": ["python-qbittorrent==0.4.3"],
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
