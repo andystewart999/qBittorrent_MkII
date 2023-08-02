@@ -19,7 +19,16 @@ def find_torrent(torrent_list, default=None):
         return x
     return default
 
-
+def get_detail(torrent, attribute):
+    value = ''
+    try:
+        value = torrent[attribute]
+    except Exception as err:
+        pass
+    
+    return value
+    
+    
 def compare_torrents(client: Client):
     #Return a dict containing all changed torrents and their new state
     global all_torrents_prev
@@ -89,24 +98,28 @@ def get_torrent_info(client: Client, hash: str):
     if hash != '' and hash != 'all':
         try:
             torrent = client.get_torrent(hash)
+            #LOGGER.error(torrent)
             return torrent
         except Exception as err:
             return {}
     else:
         torrents = client.torrents()
+        #LOGGER.error(torrents)
+        #For some reason, client.get_torrent() and client.torrents() have some differing key names!  I've decided to stay consistent with the get_torrent naming
+        #Some of the values are still different, for example completion_date/completion_on for incomplete torrents are -36000 and -1
         return {
             "torrents": [
                 {
-                    "hash": torrent["hash"],
-                    "name": torrent["name"],
-                    "addition_date": torrent["addition_date"],
-                    "completion_date": torrent["completion_date"],
-                    "eta": torrent["eta"],
-                    "peers": torrent["peers"],
-                    "save_path": torrent["save_path"],
-                    "seeds": torrent["seeds"],
-                    "total_downloaded": torrent["total_downloaded"],
-                    "total_size": torrent["total_size"]
+                    "hash": get_detail(torrent, "hash"),
+                    "name": get_detail(torrent, "name"),
+                    "addition_date": get_detail(torrent, "added_on"),
+                    "completion_date": get_detail(torrent, "completion_on"),
+                    "eta": get_detail(torrent, "eta"),
+                    "save_path": get_detail(torrent, "save_path"),
+                    "seeds": get_detail(torrent, "num_seeds"),
+                    "tags": get_detail(torrent, "tags"),
+                    "total_downloaded": get_detail(torrent, "completed"),
+                    "total_size": get_detail(torrent, "size")
                 } for torrent in torrents
             ],
         }
