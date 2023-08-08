@@ -31,7 +31,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
-from .const import DEFAULT_NAME, DOMAIN
+from .const import *
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
@@ -45,6 +45,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key=SENSOR_TYPE_CURRENT_STATUS,
         name="Status",
+        icon="mdi:cloud",
     ),
     SensorEntityDescription(
         key=SENSOR_TYPE_DOWNLOAD_SPEED,
