@@ -1,30 +1,49 @@
 {
-  "config": {
-    "step": {
-      "user": {
-        "data": {
-          "username": "qBittorrent username",
-          "password": "qBittorrent password",
-          "url": "qBittorrent URL",
-          "verify_ssl": "Verify SSL?"
+    "title": "Primary title",
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "username": "qBittorent username",
+                    "password": "qBittorrent password",
+                    "url": "qBittorrent URL",
+                    "verify_ssl": "Verify SSL?",
+                    "scan_interval": "Sensor update interval (seconds)"
+                },
+                "title": "qBittorrent MkII",
+                "description": "Enter the connection information for your qBittorrent instance"
+            },
+            "events": {
+                "data": {
+                    "torrent_complete": "A torrent is completed, i.e. finished downloading",
+                    "torrent_added": "A torrent is added",
+                    "torrent_removed": "A torrent is removed",
+                    "event_scan_interval": "Minimum event interval (seconds)"
+                },
+                "title": "qBittorrent MkII",
+                "description": "Select the events that should be raised based on qBittorrent activity"
+            }
         },
-        "title": "Login details"
-      },
-      "events": {
-        "data": {
-          "torrent_complete": "A torrent is completed, i.e. finished downloading",
-          "torrent_added": "A torrent has been added",
-          "torrent_removed": "A torrent has been removed"
+        "error": {
+            "cannot_connect": "Unable to connect",
+            "invalid_auth": "Invalid username or password"
         },
-        "title": "Select events"
-      }
+        "abort": {
+            "already_configured": "This integration is already configured"
+        }
     },
-    "error": {
-      "cannot_connect": "Unable to connect",
-      "invalid_auth": "Invalid username or password"
-    },
-    "abort": {
-      "already_configured": "This integration is already configured"
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "torrent_complete": "A torrent is completed, i.e. finished downloading",
+                    "torrent_added": "A torrent is added",
+                    "torrent_removed": "A torrent is removed",
+                    "event_scan_interval": "Minimum event interval (seconds)"
+                },
+                "title": "qBittorrent MkII",
+                "description": "Select the events that should be raised based on qBittorrent activity"
+            }
+        }
     }
-  }
 }
