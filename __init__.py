@@ -27,6 +27,8 @@ PLATFORMS = [Platform.SENSOR]
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up qBittorrent from a config entry."""
     hass.data.setdefault(DOMAIN, {})
+    #entry.async_on_unload(entry.add_update_listener(update_listener))
+    
     try:
         hass.data[DOMAIN][entry.entry_id] = await hass.async_add_executor_job(
             setup_client,
@@ -36,7 +38,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             entry.data[CONF_VERIFY_SSL],
         )
         
-        client: Client = hass.data[DOMAIN][entry.entry_id]
+        #client: Client = hass.data[DOMAIN][entry.entry_id]
         event_handler = QBEventsAndServices(hass, entry)
 
     except LoginRequired as err:
@@ -46,6 +48,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    try:
+        """Cancel any currently running event timer"""
+        hass.data[DOMAIN][CONF_EVENT_SCAN_INTERVAL]()
+    except:
+        pass
+    
+    """Create a new event timer"""
+    hass.data[DOMAIN][CONF_EVENT_SCAN_INTERVAL] = async_track_time_interval(
+        hass, event_handler.raise_events,
+        timedelta(seconds=entry.options.get(CONF_EVENT_SCAN_INTERVAL, DEFAULT_EVENT_SCAN_INTERVAL))
+    )
     return True
 
 
@@ -56,3 +69,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         if not hass.data[DOMAIN]:
             del hass.data[DOMAIN]
     return unload_ok
+    
+#async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
+#    """Handle options update.  Really just the timer"""
+#    LOGGER.error('in update_listener')
+#    self.event_unsub()
+#    LOGGER.error('recreating event')
+#    self.event_unsub = async_track_time_interval(hass, event_handler.raise_events, timedelta(seconds = entry.data[CONF_EVENT_SCAN_INTERVAL]))
