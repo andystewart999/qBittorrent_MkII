@@ -9,6 +9,7 @@ def setup_client(url: str, username: str, password: str, verify_ssl: bool) -> Cl
     """Create a qBittorrent client."""
     client = Client(url, verify=verify_ssl, timeout=10)
     client.login(username, password)
+
     # Get an arbitrary attribute to test if connection succeeds
     client.get_alternative_speed_status()
     return client
