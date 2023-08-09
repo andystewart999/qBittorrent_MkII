@@ -118,6 +118,7 @@ def get_torrent_info(client: Client, hash: str):
                     "eta": get_detail(torrent, "eta"),
                     "save_path": get_detail(torrent, "save_path"),
                     "seeds": get_detail(torrent, "num_seeds"),
+                    "category": get_detail(torrent, "category"),
                     "tags": get_detail(torrent, "tags"),
                     "total_downloaded": get_detail(torrent, "completed"),
                     "total_size": get_detail(torrent, "size")
