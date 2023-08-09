@@ -44,12 +44,12 @@ SENSOR_TYPE_LONGEST_ETA = "eta"
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key=SENSOR_TYPE_CURRENT_STATUS,
-        name="Status",
+        name="status",
         icon="mdi:cloud",
     ),
     SensorEntityDescription(
         key=SENSOR_TYPE_DOWNLOAD_SPEED,
-        name="Down Speed",
+        name="download speed",
         icon="mdi:cloud-download",
         device_class=SensorDeviceClass.DATA_RATE,
         native_unit_of_measurement=UnitOfDataRate.KIBIBYTES_PER_SECOND,
@@ -57,7 +57,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     SensorEntityDescription(
         key=SENSOR_TYPE_UPLOAD_SPEED,
-        name="Up Speed",
+        name="upload speed",
         icon="mdi:cloud-upload",
         device_class=SensorDeviceClass.DATA_RATE,
         native_unit_of_measurement=UnitOfDataRate.KIBIBYTES_PER_SECOND,
@@ -65,7 +65,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     ),
     SensorEntityDescription(
         key=SENSOR_TYPE_DOWNLOADING_TOTAL,
-        name="Downloading",
+        name="downloading",
         icon="mdi:file-cloud",
         native_unit_of_measurement="torrents"
     ),
