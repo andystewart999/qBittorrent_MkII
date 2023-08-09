@@ -32,7 +32,7 @@ USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_URL, default=DEFAULT_URL): str,
         vol.Required(CONF_USERNAME): str,
         vol.Required(CONF_PASSWORD): str,
-        vol.Required(CONF_VERIFY_SSL, default=True): bool,
+        vol.Required(CONF_VERIFY_SSL, default=DEFAULT_VERIFY_SSL): bool,
         vol.Required(CONF_SCAN_INTERVAL, default=DEFAULT_SENSOR_SCAN_INTERVAL): int,
     }
 )
