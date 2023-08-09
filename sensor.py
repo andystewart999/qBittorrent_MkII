@@ -204,7 +204,7 @@ class QBittorrentSensor(SensorEntity):
             torrents = data['torrents']
             longest_eta = 0
             for torrent in torrents:
-                if torrents[torrent]['eta'] > longest_eta and torrents[torrent]['eta'] != 8640000:
+                if torrents[torrent]['eta'] != 8640000 and torrents[torrent]['eta'] > longest_eta:
                     longest_eta = torrents[torrent]['eta']
             self._attr_native_value = longest_eta
     
