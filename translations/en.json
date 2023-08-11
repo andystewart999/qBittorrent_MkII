@@ -4,24 +4,14 @@
         "step": {
             "user": {
                 "data": {
-                    "username": "qBittorent username",
-                    "password": "qBittorrent password",
-                    "url": "qBittorrent URL",
+                    "username": "WebUI username",
+                    "password": "WebUI password",
+                    "url": "WebUI URL",
                     "verify_ssl": "Verify SSL?",
                     "scan_interval": "Sensor update interval (seconds)"
                 },
                 "title": "qBittorrent MkII",
                 "description": "Enter the connection information for your qBittorrent instance"
-            },
-            "events": {
-                "data": {
-                    "torrent_complete": "A torrent is completed, i.e. finished downloading",
-                    "torrent_added": "A torrent is added",
-                    "torrent_removed": "A torrent is removed",
-                    "event_scan_interval": "Minimum event interval (seconds)"
-                },
-                "title": "qBittorrent MkII",
-                "description": "Select the events that should be raised based on qBittorrent activity"
             }
         },
         "error": {
