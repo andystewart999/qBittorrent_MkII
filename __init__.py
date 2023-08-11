@@ -1,5 +1,4 @@
 """The qbittorrent component."""
-#import logging
 from datetime import timedelta
 
 from qbittorrent.client import LoginRequired
@@ -24,29 +23,28 @@ from .events import QBEventsAndServices
 
 PLATFORMS = [Platform.SENSOR]
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up qBittorrent from a config entry."""
     hass.data.setdefault(DOMAIN, {})
-    #entry.async_on_unload(entry.add_update_listener(update_listener))
     
     try:
-        hass.data[DOMAIN][entry.entry_id] = await hass.async_add_executor_job(
+        hass.data[DOMAIN][config_entry.entry_id] = await hass.async_add_executor_job(
             setup_client,
-            entry.data[CONF_URL],
-            entry.data[CONF_USERNAME],
-            entry.data[CONF_PASSWORD],
-            entry.data[CONF_VERIFY_SSL],
+            config_entry.data[CONF_URL],
+            config_entry.data[CONF_USERNAME],
+            config_entry.data[CONF_PASSWORD],
+            config_entry.data[CONF_VERIFY_SSL],
         )
         
-        #client: Client = hass.data[DOMAIN][entry.entry_id]
-        event_handler = QBEventsAndServices(hass, entry)
+        client: Client = hass.data[DOMAIN][config_entry.entry_id]
+        event_handler = QBEventsAndServices(hass, config_entry)
 
     except LoginRequired as err:
         raise ConfigEntryNotReady("Invalid credentials") from err
     except RequestException as err:
         raise ConfigEntryNotReady("Failed to connect") from err
 
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
 
     try:
         """Cancel any currently running event timer"""
@@ -57,15 +55,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Create a new event timer"""
     hass.data[DOMAIN][CONF_EVENT_SCAN_INTERVAL] = async_track_time_interval(
         hass, event_handler.raise_events,
-        timedelta(seconds=entry.options.get(CONF_EVENT_SCAN_INTERVAL, DEFAULT_EVENT_SCAN_INTERVAL))
+        timedelta(seconds=config_entry.options.get(CONF_EVENT_SCAN_INTERVAL, DEFAULT_EVENT_SCAN_INTERVAL))
     )
+    
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Unload qBittorrent config entry."""
-    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        del hass.data[DOMAIN][entry.entry_id]
+    if unload_ok := await hass.config_entries.async_unload_platforms(config_entry, PLATFORMS):
+        del hass.data[DOMAIN][config_entry.entry_id]
         if not hass.data[DOMAIN]:
             del hass.data[DOMAIN]
     return unload_ok
