@@ -23,7 +23,7 @@ from homeassistant.const import (
     CONF_SCAN_INTERVAL,
     STATE_IDLE,
     UnitOfDataRate,
-    UnitOfTime,
+    UnitOfTime
 )
 from homeassistant.core import DOMAIN as HOMEASSISTANT_DOMAIN, HomeAssistant
 from homeassistant.helpers import issue_registry as ir
@@ -32,10 +32,12 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
 from .const import *
+from .helpers import get_version
 from urllib.parse import urlparse
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
+
 SENSOR_TYPE_CURRENT_STATUS = "current_status"
 SENSOR_TYPE_DOWNLOAD_SPEED = "download_speed"
 SENSOR_TYPE_UPLOAD_SPEED = "upload_speed"
@@ -122,15 +124,19 @@ async def async_setup_platform(
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
-    async_add_entites: AddEntitiesCallback,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up qBittorrent sensor entries."""
     client: Client = hass.data[DOMAIN][config_entry.entry_id]
+    qb_version = await hass.async_add_executor_job(get_version, client)
+    
     entities = [
-        QBittorrentSensor(description, client, config_entry)
+        QBittorrentSensor(description, client, config_entry, qb_version)
         for description in SENSOR_TYPES
     ]
-    async_add_entites(entities, True)
+    
+
+    async_add_entities(entities, True)
 
 
 def format_speed(speed):
@@ -147,24 +153,23 @@ class QBittorrentSensor(SensorEntity):
         description: SensorEntityDescription,
         qbittorrent_client: Client,
         config_entry: ConfigEntry,
+        qb_version: str
     ) -> None:
         """Initialize the qBittorrent sensor."""
         self.entity_description = description
         self.client = qbittorrent_client
+        self.config_entry = config_entry
+        self.qb_version = qb_version
 
         self._attr_unique_id = f"{config_entry.entry_id}-{description.key}"
         self._attr_name = f"{config_entry.title} {description.name}"
-        self._device_info = {
-            "identifiers": {(DOMAIN, urlparse(config_entry[CONF_URL]).hostname)},
-            "name": urlparse(config_entry[CONF_URL]).hostname,
-            "sw_version": Client.qbittorrent_version
-        }
         self._attr_available = False
 
     def update(self) -> None:
         """Get the latest data from qBittorrent and updates the state."""
         try:
             data = self.client.sync_main_data()
+            ver=self.client.qbittorrent_version
             self._attr_available = True
         except RequestException:
             LOGGER.error("Connection lost")
@@ -214,5 +219,14 @@ class QBittorrentSensor(SensorEntity):
                     longest_eta = torrents[torrent]['eta']
             self._attr_native_value = longest_eta
 
-
+    @property
+    def device_info(self):
+        """Return device info for this sensor."""
+        return  {
+            "identifiers": {(DOMAIN, urlparse(self.config_entry.data[CONF_URL]).hostname)},
+            "name": urlparse(self.config_entry.data[CONF_URL]).hostname,
+            "manufacturer": "The qBittorrent project",
+            "model": self.qb_version,
+            "configuration_url": self.config_entry.data[CONF_URL]
         }
+        
