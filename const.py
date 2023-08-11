@@ -15,7 +15,7 @@ EVENT_COMPLETED = DOMAIN + "_" + CONF_EVENT_COMPLETE
 EVENT_ADDED = DOMAIN + "_" + CONF_EVENT_ADDED
 EVENT_REMOVED = DOMAIN + "_" + CONF_EVENT_REMOVED
 
-DEFAULT_NAME = "qBittorrent MkII"
+DEFAULT_NAME = "qBittorrent" #This is the base sensor and display name, that will have the target hostname added for uniqueness
 DEFAULT_URL = "http://192.168.1.1:8080"
 DEFAULT_VERIFY_SSL = False
 DEFAULT_SENSOR_SCAN_INTERVAL = 60
