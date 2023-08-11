@@ -26,6 +26,7 @@ from homeassistant.data_entry_flow import FlowResult
 #from .const import DEFAULT_NAME, DEFAULT_URL, DOMAIN
 from .const import *
 from .helpers import setup_client
+from urllib.parse import urlparse
 
 USER_DATA_SCHEMA = vol.Schema(
     {
@@ -77,7 +78,7 @@ class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
                 #Show the next page of the config flow
                 #return await self.async_step_events()
 
-            return self.async_create_entry(title=DEFAULT_NAME, data=user_input)
+            return self.async_create_entry(title=DEFAULT_NAME + ' - ' + urlparse(user_input[CONF_URL]).hostname, data=user_input)
 
         return self.async_show_form(step_id="user", data_schema=USER_DATA_SCHEMA, errors=errors)
 
