@@ -20,10 +20,7 @@ from homeassistant.const import (
     CONF_SCAN_INTERVAL,
 )
 from homeassistant.data_entry_flow import FlowResult
-#from homeassistant.helpers.event import async_track_time_interval
-#from datetime import timedelta
 
-#from .const import DEFAULT_NAME, DEFAULT_URL, DOMAIN
 from .const import *
 from .helpers import setup_client
 from urllib.parse import urlparse
@@ -71,37 +68,10 @@ class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors = {"base": "invalid_auth"}
             except RequestException:
                 errors = {"base": "cannot_connect"}
-            #else:
-                #Save the user input
-                #self.temp_user_input = user_input
-                
-                #Show the next page of the config flow
-                #return await self.async_step_events()
 
             return self.async_create_entry(title=DEFAULT_NAME + ' - ' + urlparse(user_input[CONF_URL]).hostname, data=user_input)
 
         return self.async_show_form(step_id="user", data_schema=USER_DATA_SCHEMA, errors=errors)
-
-    async def async_step_events(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Second page of the config flow"""
-        errors = {}
-
-        if user_input is not None:
-            #self._async_abort_entries_match({CONF_URL: user_input[CONF_URL]})   #### what is this?   only just copied and pasted this section, lots to change still
-            
-            #Just go straight to creating the entry
-            #How do other multi-page integrations do this?
-            LOGGER.error('config flow user input')
-            LOGGER.error(self.temp_user_input)
-            LOGGER.error(user_input)
-            user_input = self.temp_user_input | user_input
-            LOGGER.error('combined user input')
-            LOGGER.error(user_input)
-            return self.async_create_entry(title=DEFAULT_NAME, data=user_input)
-
-        return self.async_show_form(step_id="events", data_schema=USER_EVENTS_SCHEMA, errors=errors)
 
 
     async def async_step_import(self, config: dict[str, Any]) -> FlowResult:
