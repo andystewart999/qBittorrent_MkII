@@ -32,6 +32,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
 from .const import *
+from urllib.parse import urlparse
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
@@ -153,6 +154,11 @@ class QBittorrentSensor(SensorEntity):
 
         self._attr_unique_id = f"{config_entry.entry_id}-{description.key}"
         self._attr_name = f"{config_entry.title} {description.name}"
+        self._device_info = {
+            "identifiers": {(DOMAIN, urlparse(config_entry[CONF_URL]).hostname)},
+            "name": urlparse(config_entry[CONF_URL]).hostname,
+            "sw_version": Client.qbittorrent_version
+        }
         self._attr_available = False
 
     def update(self) -> None:
@@ -207,4 +213,6 @@ class QBittorrentSensor(SensorEntity):
                 if torrents[torrent]['eta'] != 8640000 and torrents[torrent]['eta'] > longest_eta:
                     longest_eta = torrents[torrent]['eta']
             self._attr_native_value = longest_eta
-    
+
+
+        }
