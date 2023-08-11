@@ -1,7 +1,6 @@
 """Helper functions for qBittorrent."""
 from qbittorrent.client import Client
 from .const import *
-import json
 
 all_torrents_prev = []
 
@@ -11,7 +10,7 @@ def setup_client(url: str, username: str, password: str, verify_ssl: bool) -> Cl
     client.login(username, password)
 
     # Get an arbitrary attribute to test if connection succeeds
-    client.get_alternative_speed_status()
+    client.qbittorrent_version
     return client
 
 
@@ -29,7 +28,9 @@ def get_detail(torrent, attribute):
     
     return value
     
-    
+def get_version(client: Client):
+    return client.qbittorrent_version
+
 def compare_torrents(client: Client):
     #Return a dict containing all changed torrents and their new state
     global all_torrents_prev
