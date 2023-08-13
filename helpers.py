@@ -32,12 +32,12 @@ def get_version(client: Client):
     return client.qbittorrent_version
 
 def compare_torrents(client: Client):
-    #Return a dict containing all changed torrents and their new state
+    #Return a list containing all changed torrents and their new state
     global all_torrents_prev
     
-    completed_torrents= {}
-    added_torrents= {}
-    removed_torrents = {}
+    completed_torrents= []
+    added_torrents= []
+    removed_torrents = []
 
     #Retrieve current torrent info    
     all_torrents = client.torrents()
@@ -58,9 +58,12 @@ def compare_torrents(client: Client):
                     #See if it's just completed downloading
                     if found_torrent['completion_on'] > 0:
                         #It's just finished downloading
-                        completed_torrents[prev_hash] = prev_name
+
+                        #Get the torrent_specific details also - different information is returned in client.get_torrent() compared to client.torrents()
+                        found_torrent_detail = client.get_torrent(found_torrent['hash'])
+                        completed_torrents.append (found_torrent | found_torrent_detail)
             else:
-                removed_torrents[prev_hash] = prev_name
+                removed_torrents.append(torrent)
 
         for torrent in all_torrents:
             #See if any new torrents have been added - it won't be in the previous list
@@ -68,7 +71,9 @@ def compare_torrents(client: Client):
             hash = torrent['hash']
             new_torrent = find_torrent(x for x in all_torrents_prev if x['hash'] == hash)
             if new_torrent is None:
-                added_torrents[hash] = name
+                #Get the torrent_specific details also - different information is returned in client.get_torrent() compared to client.torrents()
+                added_torrent_detail = client.get_torrent(torrent['hash'])
+                added_torrents.append(torrent | added_torrent_detail)
 
     all_torrents_prev = all_torrents
  

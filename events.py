@@ -60,12 +60,15 @@ class QBEventsAndServices:
 
         #Has anything changed that we care about?  Raise events as required
         if completed_torrents and self.config_entry.options.get(CONF_EVENT_COMPLETE, DEFAULT_EVENT_COMPLETE):
-             self.hass.bus.async_fire(EVENT_COMPLETED, completed_torrents)
+            for torrent in completed_torrents:
+                self.hass.bus.async_fire(EVENT_COMPLETED, torrent)
 
         if added_torrents and self.config_entry.options.get(CONF_EVENT_ADDED, DEFAULT_EVENT_ADDED):
-            self.hass.bus.async_fire(EVENT_ADDED, added_torrents)
+            for torrent in added_torrents:
+                self.hass.bus.async_fire(EVENT_ADDED, torrent)
 
         if removed_torrents and self.config_entry.options.get(CONF_EVENT_REMOVED, DEFAULT_EVENT_REMOVED):
-            self.hass.bus.async_fire(EVENT_REMOVED, removed_torrents)
+            for torrent in removed_torrents:
+                self.hass.bus.async_fire(EVENT_REMOVED, torrent)
 
         return
