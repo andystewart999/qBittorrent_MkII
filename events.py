@@ -43,7 +43,7 @@ class QBEventsAndServices:
             except Exception as err:
                 hash = 'all'
 
-            return await self.hass.async_add_executor_job(resume_downloads, self.client)
+            return await self.hass.async_add_executor_job(resume_downloads, self.client, hash)
 
         async def service_shutdown(call: ServiceCall):
             await self.hass.async_add_executor_job(shutdown, self.client)
