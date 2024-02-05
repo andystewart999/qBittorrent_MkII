@@ -204,19 +204,25 @@ class QBittorrentSensor(SensorEntity):
             self._attr_native_value = format_speed(upload)
         
         elif sensor_type == SENSOR_TYPE_DOWNLOADING_TOTAL:
-            torrents = data['torrents']
             downloading = 0
-            for torrent in torrents:
-                if torrents[torrent]['state'][:-2] == 'DL' or torrents[torrent]['state'] == 'downloading':
-                    downloading += 1     
+            try:
+                torrents = data["torrents"]
+                for torrent in torrents:
+                    if torrents[torrent]["state"][:-2] == "DL" or torrents[torrent]["state"] == "downloading":
+                        downloading += 1     
+            except:
+                pass
             self._attr_native_value = downloading
 
         elif sensor_type == SENSOR_TYPE_LONGEST_ETA:
-            torrents = data['torrents']
             longest_eta = 0
-            for torrent in torrents:
-                if torrents[torrent]['eta'] != 8640000 and torrents[torrent]['eta'] > longest_eta:
-                    longest_eta = torrents[torrent]['eta']
+            try:
+                torrents = data["torrents"]
+                for torrent in torrents:
+                    if torrents[torrent]["eta"] != 8640000 and torrents[torrent]["eta"] > longest_eta:
+                        longest_eta = torrents[torrent]["eta"]
+            except:
+                pass
             self._attr_native_value = longest_eta
 
     @property
