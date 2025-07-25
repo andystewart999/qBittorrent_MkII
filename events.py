@@ -1,14 +1,14 @@
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse
 from homeassistant.config_entries import ConfigEntry
-#from homeassistant.helpers.event import async_track_time_interval
-#from datetime import timedelta
 
-from qbittorrent.client import Client, LoginRequired
+import qbittorrentapi
+from qbittorrentapi import Client
+
 from .const import *
-from .helpers import compare_torrents, pause_downloads, resume_downloads, get_torrent_info, shutdown
+from .helpers import compare_torrents, pause_downloads, resume_downloads, get_torrent_info, delete_torrent, shutdown
 
-class QBEventsAndServices:
-    """Encapsulates logic for raising events based on torrent activity"""
+class QBEventsAndActions:
+    """Encapsulates logic for raising events based on torrent activity, and for actions that Home Assistant can call"""
 
     def __init__(
         self,
@@ -21,15 +21,20 @@ class QBEventsAndServices:
         self.config_entry = config_entry
         self.hass = hass
 
-        async def service_get_torrent_info(call: ServiceCall) -> ServiceResponse:
+        # Action that returns a JSON array of torrents that meet the criteria
+        async def action_get_torrent_info(call: ServiceCall) -> ServiceResponse:
             try:
-                hash = call.data.get('hash','all')
+                hash = call.data.get('hash', None)
+                status_filter = call.data.get('status_filter', 'all')
+
             except Exception as err:
-                hash = 'all'
+                hash = None
+                status_filter = "all"
 
-            return await self.hass.async_add_executor_job(get_torrent_info, self.client, hash)
+            return await self.hass.async_add_executor_job(get_torrent_info, self.client, hash, status_filter)
 
-        async def service_pause_downloads(call: ServiceCall):
+        # Action that pauses the targeted torrent(s)
+        async def action_pause_downloads(call: ServiceCall):
             try:
                 hash = call.data.get('hash','all')
             except Exception as err:
@@ -37,7 +42,8 @@ class QBEventsAndServices:
 
             return await self.hass.async_add_executor_job(pause_downloads, self.client, hash)
         
-        async def service_resume_downloads(call: ServiceCall):
+        # Action that resumes the targeted torrent(s)
+        async def action_resume_downloads(call: ServiceCall):
             try:
                 hash = call.data.get('hash','all')
             except Exception as err:
@@ -45,15 +51,32 @@ class QBEventsAndServices:
 
             return await self.hass.async_add_executor_job(resume_downloads, self.client, hash)
 
-        async def service_shutdown(call: ServiceCall):
+        # Action that deletes the targeted torrrent
+        async def action_delete_torrent(call: ServiceCall):
+            try:
+                hash = call.data.get('hash', None)
+                delete_files = call.data.get('delete_files', False)
+                
+            except Exception as err:
+                hash = None
+
+            if hash is not None:
+                return await self.hass.async_add_executor_job(delete_torrent, self.client, hash, delete_files)
+
+        # Action that attempts to shut down the remote qBittorrent app
+        async def action_service_shutdown(call: ServiceCall):
             await self.hass.async_add_executor_job(shutdown, self.client)
             return
 
-        hass.services.async_register(DOMAIN, SERVICE_GET_TORRENT_INFO, service_get_torrent_info, supports_response=SupportsResponse.ONLY)
-        hass.services.async_register(DOMAIN, SERVICE_PAUSE_DOWLOADS, service_pause_downloads)
-        hass.services.async_register(DOMAIN, SERVICE_RESUME_DOWLOADS, service_resume_downloads)
-        hass.services.async_register(DOMAIN, SERVICE_SHUTDOWN, service_shutdown)
+        # Register all actions so they appear in the Actions dropdown in the Developer screen
+        hass.services.async_register(DOMAIN, ACTION_GET_TORRENT_INFO, action_get_torrent_info, supports_response=SupportsResponse.ONLY)
+        hass.services.async_register(DOMAIN, ACTION_PAUSE_DOWLOADS, action_pause_downloads)
+        hass.services.async_register(DOMAIN, ACTION_RESUME_DOWLOADS, action_resume_downloads)
+        hass.services.async_register(DOMAIN, ACTION_DELETE_TORRENT, action_delete_torrent)
+        hass.services.async_register(DOMAIN, ACTION_SERVICE_SHUTDOWN, action_service_shutdown)
 
+
+    # This function is called periodically as per the ConfigFlow
     async def raise_events(self, hass):
         """Review current torrent info and determine if any events should be raised"""
         completed_torrents, added_torrents, removed_torrents = await self.hass.async_add_executor_job(compare_torrents, self.client)
@@ -70,5 +93,3 @@ class QBEventsAndServices:
         if removed_torrents and self.config_entry.options.get(CONF_EVENT_REMOVED, DEFAULT_EVENT_REMOVED):
             for torrent in removed_torrents:
                 self.hass.bus.async_fire(EVENT_REMOVED, torrent)
-
-        return
