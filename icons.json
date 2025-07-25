@@ -1,18 +1,18 @@
 {
   "services": {
-    "service_get_torrent_info": {
+    "action_get_torrent_info": {
       "service": "mdi:format-list-group"
     },
-    "service_pause_downloads": {
+    "action_pause_downloads": {
       "service": "mdi:pause"
     },
-    "service_resume_downloads": {
+    "action_resume_downloads": {
       "service": "mdi:play"
     },
-    "service_delete_torrent": {
+    "action_delete_torrent": {
       "service": "mdi:trash-can-outline"
     },
-    "service_shutdown": {
+    "action_service_shutdown": {
       "service": "mdi:power"
     }
   }
