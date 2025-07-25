@@ -6,6 +6,6 @@
   "documentation": "https://github.com/andystewart999/qBittorrent_mkii",
   "issue_tracker": "https://github.com/andystewart999/qBittorrent_mkii/issues",
   "iot_class": "local_polling",
-  "requirements": ["python-qbittorrent==0.4.3"],
-  "version": "1.2.0"
+  "requirements": ["qbittorrent-api==2025.7.0"],
+  "version": "1.3.0"
 }
