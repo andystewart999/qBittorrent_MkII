@@ -3,7 +3,8 @@ from __future__ import annotations
 
 import logging
 
-from qbittorrent.client import Client, LoginRequired
+import qbittorrentapi
+from qbittorrentapi import Client
 from requests.exceptions import RequestException
 import voluptuous as vol
 
@@ -34,9 +35,6 @@ from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from .const import *
 from .helpers import get_version
 from urllib.parse import urlparse
-from homeassistant.helpers.update_coordinator import (
-    DataUpdateCoordinator,
-)
 
 SENSOR_TYPE_CURRENT_STATUS = "current_status"
 SENSOR_TYPE_DOWNLOAD_SPEED = "download_speed"
@@ -89,22 +87,20 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
-
 async def async_setup_platform(
     hass: HomeAssistant,
     config: ConfigType,
     async_add_entities: AddEntitiesCallback,
     discovery_info: DiscoveryInfoType | None = None,
 ) -> None:
+
     """Set up the qBittorrent platform."""
     hass.async_create_task(
         hass.config_entries.flow.async_init(
             DOMAIN, context={"source": SOURCE_IMPORT}, data=config
         )
     )
-    
-    coordinator = hass.data[DOMAIN]["coordinator"]
-    
+
     ir.async_create_issue(
         hass,
         HOMEASSISTANT_DOMAIN,
@@ -126,6 +122,7 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
+
     """Set up qBittorrent sensor entries."""
     client: Client = hass.data[DOMAIN][config_entry.entry_id]
     qb_version = await hass.async_add_executor_job(get_version, client)
@@ -134,7 +131,6 @@ async def async_setup_entry(
         QBittorrentSensor(description, client, config_entry, qb_version)
         for description in SENSOR_TYPES
     ]
-    
 
     async_add_entities(entities, True)
 
@@ -155,6 +151,7 @@ class QBittorrentSensor(SensorEntity):
         config_entry: ConfigEntry,
         qb_version: str
     ) -> None:
+
         """Initialize the qBittorrent sensor."""
         self.entity_description = description
         self.client = qbittorrent_client
@@ -163,23 +160,42 @@ class QBittorrentSensor(SensorEntity):
 
         self._attr_unique_id = f"{config_entry.entry_id}-{description.key}"
         self._attr_name = f"{config_entry.title} {description.name}"
-        self._attr_available = False
 
     def update(self) -> None:
         """Get the latest data from qBittorrent and updates the state."""
         try:
-            data = self.client.sync_main_data()
-            ver=self.client.qbittorrent_version
+            if not self._attr_available:
+                # Try to log in again to recreate the session or update the cookie
+                LOGGER.info(f"Attempting to log in in after disconnection")
+
+                self.client.auth_log_in()
+
+            data = self.client.sync_maindata()
             self._attr_available = True
-        except RequestException:
-            LOGGER.error("Connection lost")
+
+        except RequestException as ex:
+            LOGGER.error(f"Error {ex} attempting to retrieve data")
             self._attr_available = False
+
             return
-        except LoginRequired:
-            LOGGER.error("Invalid authentication")
+
+        except qbittorrentapi.LoginFailed as ex:
+            LOGGER.error(f"Error {ex} attempting to connect")
+
+            # We'll try to connect again at the next poll
+            self._attr_available = False
+            
+            return
+
+        except Exception as ex:
+            # General failure
+            LOGGER.error(f"Error {ex} attempting to retrieve data")
+
             return
 
         if data is None:
+            LOGGER.debug(f"No data returned from update request")
+
             return
 
         download = data["server_state"]["dl_info_speed"]
@@ -190,10 +206,13 @@ class QBittorrentSensor(SensorEntity):
         if sensor_type == SENSOR_TYPE_CURRENT_STATUS:
             if upload > 0 and download > 0:
                 self._attr_native_value = "up_down"
+    
             elif upload > 0 and download == 0:
                 self._attr_native_value = "seeding"
+
             elif upload == 0 and download > 0:
                 self._attr_native_value = "downloading"
+
             else:
                 self._attr_native_value = STATE_IDLE
 
@@ -210,8 +229,10 @@ class QBittorrentSensor(SensorEntity):
                 for torrent in torrents:
                     if torrents[torrent]["state"][:-2] == "DL" or torrents[torrent]["state"] == "downloading":
                         downloading += 1     
+
             except:
                 pass
+
             self._attr_native_value = downloading
 
         elif sensor_type == SENSOR_TYPE_LONGEST_ETA:
@@ -221,8 +242,10 @@ class QBittorrentSensor(SensorEntity):
                 for torrent in torrents:
                     if torrents[torrent]["eta"] != 8640000 and torrents[torrent]["eta"] > longest_eta:
                         longest_eta = torrents[torrent]["eta"]
+
             except:
                 pass
+
             self._attr_native_value = longest_eta
 
     @property
