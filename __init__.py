@@ -1,13 +1,14 @@
 """The qbittorrent component."""
 from datetime import timedelta
 
-from qbittorrent.client import LoginRequired
+import qbittorrentapi
 from requests.exceptions import RequestException
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_PASSWORD,
     CONF_URL,
+    CONF_PORT,
     CONF_USERNAME,
     CONF_VERIFY_SSL,
     CONF_SCAN_INTERVAL,
@@ -19,7 +20,7 @@ from homeassistant.helpers.event import async_track_time_interval
 
 from .const import *
 from .helpers import setup_client
-from .events import QBEventsAndServices
+from .events import QBEventsAndActions
 
 PLATFORMS = [Platform.SENSOR]
 
@@ -35,12 +36,13 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
             config_entry.data[CONF_PASSWORD],
             config_entry.data[CONF_VERIFY_SSL],
         )
-        
-        client: Client = hass.data[DOMAIN][config_entry.entry_id]
-        event_handler = QBEventsAndServices(hass, config_entry)
 
-    except LoginRequired as err:
+        event_handler = QBEventsAndActions(hass, config_entry)
+
+    # Raising this exception means HA will automatically retry setup again later
+    except qbittorrentapi.LoginFailed as err:
         raise ConfigEntryNotReady("Invalid credentials") from err
+
     except RequestException as err:
         raise ConfigEntryNotReady("Failed to connect") from err
 
@@ -49,6 +51,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     try:
         """Cancel any currently running event timer"""
         hass.data[DOMAIN][CONF_EVENT_SCAN_INTERVAL]()
+
     except:
         pass
     
@@ -67,11 +70,5 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> 
         del hass.data[DOMAIN][config_entry.entry_id]
         if not hass.data[DOMAIN]:
             del hass.data[DOMAIN]
+
     return unload_ok
-    
-#async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
-#    """Handle options update.  Really just the timer"""
-#    LOGGER.error('in update_listener')
-#    self.event_unsub()
-#    LOGGER.error('recreating event')
-#    self.event_unsub = async_track_time_interval(hass, event_handler.raise_events, timedelta(seconds = entry.data[CONF_EVENT_SCAN_INTERVAL]))
