@@ -1,36 +1,47 @@
-"""Helper functions for qBittorrent."""
-from qbittorrent.client import Client
+"""Helper functions for qbittorrentapi"""
+import qbittorrentapi
+from qbittorrentapi import Client
+
 from .const import *
+import logging
 
 all_torrents_prev = []
 
 def setup_client(url: str, username: str, password: str, verify_ssl: bool) -> Client:
-    """Create a qBittorrent client."""
-    client = Client(url, verify=verify_ssl, timeout=10)
-    client.login(username, password)
+    try:
+        client = qbittorrentapi.Client(host = url, username = username, password = password, VERIFY_WEBUI_CERTIFICATE = verify_ssl, SIMPLE_RESPONSES = True, REQUESTS_ARGS={'timeout': (3, 5)})
 
-    # Get an arbitrary attribute to test if connection succeeds
-    client.qbittorrent_version
-    return client
+        # Get an arbitrary attribute to test if connection succeeded and we're passing data
+        version = client.app.version
 
+        return client
 
+    except Exception as ex:
+        LOGGER.error(f"Error {ex} setting up qBittorent client")
+
+        return None
+
+# Return all torrents in the list
 def find_torrent(torrent_list, default=None):
     for x in torrent_list:
         return x
+
     return default
 
+# Return a specific torrent attribute or an empty string
 def get_detail(torrent, attribute):
-    value = ''
     try:
         value = torrent[attribute]
     except Exception as err:
-        pass
+        return ""
     
     return value
     
+# Return the version of the remote client
 def get_version(client: Client):
-    return client.qbittorrent_version
+    return client.app.version
 
+# Compare the list of torrents with the last check, looking for newly added, removed and completed torrents
 def compare_torrents(client: Client):
     #Return a list containing all changed torrents and their new state
     global all_torrents_prev
@@ -40,7 +51,7 @@ def compare_torrents(client: Client):
     removed_torrents = []
 
     #Retrieve current torrent info    
-    all_torrents = client.torrents()
+    all_torrents = client.torrents_info()
 
     #Cater for a fresh startup - we don't want to raise a ton of events straight away
     if all_torrents_prev:
@@ -55,13 +66,12 @@ def compare_torrents(client: Client):
             found_torrent = find_torrent(x for x in all_torrents if x['hash'] == prev_hash)
             if found_torrent is not None:
                 if found_torrent['completion_on'] != prev_completion_on:
+
                     #See if it's just completed downloading
                     if found_torrent['completion_on'] > 0:
                         #It's just finished downloading
+                        completed_torrents.append (found_torrent)
 
-                        #Get the torrent_specific details also - different information is returned in client.get_torrent() compared to client.torrents()
-                        found_torrent_detail = client.get_torrent(found_torrent['hash'])
-                        completed_torrents.append (found_torrent | found_torrent_detail)
             else:
                 removed_torrents.append(torrent)
 
@@ -69,51 +79,53 @@ def compare_torrents(client: Client):
             #See if any new torrents have been added - it won't be in the previous list
             name = torrent['name']
             hash = torrent['hash']
+
             new_torrent = find_torrent(x for x in all_torrents_prev if x['hash'] == hash)
             if new_torrent is None:
-                #Get the torrent_specific details also - different information is returned in client.get_torrent() compared to client.torrents()
-                added_torrent_detail = client.get_torrent(torrent['hash'])
-                added_torrents.append(torrent | added_torrent_detail)
+                added_torrents.append(torrent)
 
     all_torrents_prev = all_torrents
  
     return completed_torrents, added_torrents, removed_torrents
 
+# Pause the targeted torrent(s)
 def pause_downloads(client: Client, hash: str):
     if hash != '' and hash != 'all':
         try:
-            client.pause(hash)
+            client.torrents_pause(hash)
         except Exception as err:
-            pass
+            LOGGER.warn(f"Unable to pause torrent '{hash}'")
     else:
-        client.pause_all()
+        client.torrents_pause('all')
     
-    return
 
-def resume_downloads(client: Client, hash:str):
+# Resume the targeted torrent(s)
+def resume_downloads(client: Client, hash: str):
     if hash != '' and hash != 'all':
         try:
-            client.resume(hash)
+            client.torrents_resume(hash)
         except Exception as err:
-            pass
+            LOGGER.warn(f"Unable to resume torrent '{hash}'")
     else:
-        client.resume_all()
+        client.torrents_resume('all')
     
-    return
 
-def get_torrent_info(client: Client, hash: str):
-    if hash != '' and hash != 'all':
+# Delete the targeted torrent
+def delete_torrent(client: Client, hash: str, delete_files: bool):
+    if hash is not None:
         try:
-            torrent = client.get_torrent(hash)
-            #LOGGER.error(torrent)
-            return torrent
+            client.torrents_delete(delete_files, hash)
         except Exception as err:
-            return {}
-    else:
-        torrents = client.torrents()
-        #LOGGER.error(torrents)
-        #For some reason, client.get_torrent() and client.torrents() have some differing key names!  I've decided to stay consistent with the get_torrent naming
-        #Some of the values are still different, for example completion_date/completion_on for incomplete torrents are -36000 and -1
+            LOGGER.warn(f"Unable to delete torrent '{hash}'")
+
+# Return an array of torrent information based on the provided criteria
+def get_torrent_info(client: Client, hash: str = None, status_filter: str = "all"):
+    if hash == "" or hash == "all":
+        hash = None
+
+    try:
+        torrents = client.torrents_info(torrent_hashes = hash, status_filter = status_filter, SIMPLE_RESPONSES = True)
+
         return {
             "torrents": [
                 {
@@ -133,10 +145,15 @@ def get_torrent_info(client: Client, hash: str):
             ],
         }
 
+    except Exception as err:
+            LOGGER.warn(f"Unable to get info for torrent '{hash}' with status_filter {status_filter}")
+
+            return {}
+
+# Attempt to shut down the remote client
 def shutdown(client: Client):
     try:
-        client.shutdown()
+        client.app.shutdown()
+
     except Exception as err:
         LOGGER.error(err)
-        pass
-    return
