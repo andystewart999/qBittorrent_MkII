@@ -1,6 +1,6 @@
 # Describes the format for the service calls
 
-service_get_torrent_info:
+action_get_torrent_info:
   name: Get torrent info
   description: Returns detailed torrent information on a specific torrent (if hash is set) or all torrents
   fields:
@@ -11,9 +11,33 @@ service_get_torrent_info:
       required: false
       selector:
         text:
+    status_filter:
+      name: status_filter
+      description: Optional status filter
+      example: seeding
+      required: false
+      selector:
+        select:
+          options:
+            - "all"
+            - "downloading"
+            - "seeding"
+            - "completed"
+            - "paused"
+            - "stopped"
+            - "active"
+            - "inactive"
+            - "resumed"
+            - "running"
+            - "stalled"
+            - "stalled_uploading"
+            - "stalled_downloading"
+            - "checking"
+            - "moving"
+            - "errored"
 
-service_pause_downloads:
-  name: Pause downloads
+action_pause_downloads:
+  name: Pause torrent
   description: Pause a specific torrent (if hash is set) or all torrents
   fields:
     hash:
@@ -24,8 +48,8 @@ service_pause_downloads:
       selector:
         text:
 
-service_resume_downloads:
-  name: Resume downloads
+action_resume_downloads:
+  name: Resume torrent
   description: Resume a specific torrent (if hash is set) or all torrents)
   fields:
     hash:
@@ -36,6 +60,25 @@ service_resume_downloads:
       selector:
         text:
 
-service_shutdown:
+action_delete_torrent:
+  name: Delete torrent
+  description: Delete a specific torrent and optionally its associated files
+  fields:
+    hash:
+      name: hash
+      description: The hash associated with the torrent that should be deleted
+      example: 0a861ed12bf4f16f67b9a747e149c7e6b1863e51
+      required: true
+      selector:
+        text:
+    delete_files:
+      name: delete_files
+      description: Set to True to also delete the torrent's files
+      example: True 
+      required: true
+      selector:
+        boolean:
+
+action_service_shutdown:
     name: Shut down qBittorrent
     description: Attempts to shut down the qBitorrent client
