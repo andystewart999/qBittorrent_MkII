@@ -4,7 +4,9 @@ from __future__ import annotations
 #import logging
 from typing import Any
 
-from qbittorrent.client import LoginRequired
+import qbittorrentapi
+from qbittorrentapi import Client
+
 from requests.exceptions import RequestException
 import voluptuous as vol
 
@@ -13,9 +15,9 @@ from homeassistant.config_entries import ConfigFlow
 from homeassistant.core import callback
 from homeassistant.const import (
     CONF_NAME,
-    CONF_PASSWORD,
     CONF_URL,
     CONF_USERNAME,
+    CONF_PASSWORD,
     CONF_VERIFY_SSL,
     CONF_SCAN_INTERVAL,
 )
@@ -64,8 +66,10 @@ class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
                     user_input[CONF_PASSWORD],
                     user_input[CONF_VERIFY_SSL],
                 )
-            except LoginRequired:
+                
+            except qbittorrentapi.LoginFailed as ex:
                 errors = {"base": "invalid_auth"}
+
             except RequestException:
                 errors = {"base": "cannot_connect"}
 
@@ -90,14 +94,14 @@ class QbittorrentConfigFlow(ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        return qBittorrentOptionsFlowHandler(config_entry)
+        return qBittorrentOptionsFlowHandler()
 
 class qBittorrentOptionsFlowHandler(config_entries.OptionsFlow):
     """qBittorrent config flow options handler"""
-    
-    def __init__(self, config_entry):
-        """Initialise the options flow"""
-        self.config_entry: config_entries.ConfigEntry = config_entry
+
+    @property
+    def config_entry(self):
+        return self.hass.config_entries.async_get_entry(self.handler)
 
     async def async_step_init(self, user_input=None):
         """Handle an options flow initalised by the user"""
