@@ -76,7 +76,7 @@ class QBEventsAndActions:
         hass.services.async_register(DOMAIN, ACTION_SERVICE_SHUTDOWN, action_service_shutdown)
 
 
-    # This function is called periodically as per the ConfigFlow
+    # This function is called periodically as per the ConfigFlow value
     async def raise_events(self, hass):
         """Review current torrent info and determine if any events should be raised"""
         completed_torrents, added_torrents, removed_torrents = await self.hass.async_add_executor_job(compare_torrents, self.client)

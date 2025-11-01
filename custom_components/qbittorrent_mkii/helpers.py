@@ -1,37 +1,66 @@
 """Helper functions for qbittorrentapi"""
 import qbittorrentapi
-from qbittorrentapi import Client
+from qbittorrentapi import (
+    Client,
+    APIConnectionError,
+    LoginFailed,
+    HTTPError,
+    Forbidden403Error,
+    InternalServerError500Error,
+    UnsupportedQbittorrentVersion
+    )
+
+from requests.exceptions import (
+    RequestException, 
+    ConnectTimeout
+    )
 
 from .const import *
 import logging
 
+_LOGGER = logging.getLogger(__name__)
+
 all_torrents_prev = []
 
-def setup_client(url: str, username: str, password: str, verify_ssl: bool) -> Client:
-    try:
-        client = qbittorrentapi.Client(host = url, username = username, password = password, VERIFY_WEBUI_CERTIFICATE = verify_ssl, SIMPLE_RESPONSES = True, REQUESTS_ARGS={'timeout': (3, 5)})
+def setup_client(url: str, username: str, password: str, verify_ssl: bool):
+    # Errors raised will be captured by the calling function
 
-        # Get an arbitrary attribute to test if connection succeeded and we're passing data
-        version = client.app.version
+    try:
+        client = qbittorrentapi.Client(host = url, VERIFY_WEBUI_CERTIFICATE = verify_ssl, SIMPLE_RESPONSES = True, REQUESTS_ARGS={'timeout': (3, 5)})
+
+        # Test the provided credentials
+        client.auth_log_in(username = username, password = password)
 
         return client
 
-    except Exception as ex:
-        LOGGER.error(f"Error {ex} setting up qBittorent client")
+    except LoginFailed as ex:
+        raise LoginFailed from ex
+ 
+    except Forbidden403Error as ex:
+        raise Forbidden403Error from ex
 
-        return None
+    except APIConnectionError as ex:
+        raise APIConnectionError from ex
+
+    except ConnectTimeout as ex:
+        raise ConnectTimeout from ex
+
+    except Exception as ex:
+        raise RequestException from ex 
 
 # Return all torrents in the list
 def find_torrent(torrent_list, default=None):
-    for x in torrent_list:
-        return x
-
-    return default
+    try:
+        for x in torrent_list:
+            return x
+    except:
+        return default
 
 # Return a specific torrent attribute or an empty string
 def get_detail(torrent, attribute):
     try:
         value = torrent[attribute]
+
     except Exception as err:
         return ""
     
@@ -39,7 +68,11 @@ def get_detail(torrent, attribute):
     
 # Return the version of the remote client
 def get_version(client: Client):
-    return client.app.version
+    try:
+        return client.app.version
+
+    except:
+        return None
 
 # Compare the list of torrents with the last check, looking for newly added, removed and completed torrents
 def compare_torrents(client: Client):
@@ -93,6 +126,7 @@ def pause_downloads(client: Client, hash: str):
     if hash != '' and hash != 'all':
         try:
             client.torrents_pause(hash)
+
         except Exception as err:
             LOGGER.warn(f"Unable to pause torrent '{hash}'")
     else:
@@ -104,6 +138,7 @@ def resume_downloads(client: Client, hash: str):
     if hash != '' and hash != 'all':
         try:
             client.torrents_resume(hash)
+
         except Exception as err:
             LOGGER.warn(f"Unable to resume torrent '{hash}'")
     else:
@@ -115,6 +150,7 @@ def delete_torrent(client: Client, hash: str, delete_files: bool):
     if hash is not None:
         try:
             client.torrents_delete(delete_files, hash)
+
         except Exception as err:
             LOGGER.warn(f"Unable to delete torrent '{hash}'")
 

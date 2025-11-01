@@ -11,15 +11,22 @@
                     "scan_interval": "Sensor update interval (seconds)"
                 },
                 "title": "qBittorrent MkII",
-                "description": "Enter the connection information for your qBittorrent instance"
+                "description": "{action} the connection information for your qBittorrent instance"
             }
         },
         "error": {
             "cannot_connect": "Unable to connect",
-            "invalid_auth": "Invalid username or password"
+            "invalid_auth": "Invalid username or password",
+            "blocked_connection": "Connection blocked by the API - try again later",
+            "api_error": "Unknown API-related connection error",
+            "request_exception": "Ambiguous exception while connecting",
+            "connection_timeout": "Connection timeout"
         },
         "abort": {
-            "already_configured": "This integration is already configured"
+            "already_configured": "An entry for {ipaddress} already exists",
+            "reauth_successful": "Successfully reauthenticated",
+            "reconfigure_successful": "Successfully reconfigured",
+            "reauth_successful": "Reauthorisation successfull"
         }
     },
     "options": {
