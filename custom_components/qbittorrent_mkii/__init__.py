@@ -76,9 +76,6 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         timedelta(seconds=config_entry.options.get(CONF_EVENT_SCAN_INTERVAL, DEFAULT_EVENT_SCAN_INTERVAL))
     )
 
-#    # Reload if the options change
-#    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
-    
     return True
 
 
