@@ -39,12 +39,6 @@ from urllib.parse import urlparse
 
 _LOGGER = logging.getLogger(__name__)
 
-SENSOR_TYPE_CURRENT_STATUS = "current_status"
-SENSOR_TYPE_DOWNLOAD_SPEED = "download_speed"
-SENSOR_TYPE_UPLOAD_SPEED = "upload_speed"
-SENSOR_TYPE_DOWNLOADING_TOTAL = "downloading"
-SENSOR_TYPE_LONGEST_ETA = "eta"
-
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key=SENSOR_TYPE_CURRENT_STATUS,
