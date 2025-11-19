@@ -1,6 +1,5 @@
 {
   "name": "qBittorrent MkII",
-  "content_in_root": false,
   "render_readme": true,
-  "homeassistant": "2022.7.0"
+  "homeassistant": "2025.1.0"
 }
