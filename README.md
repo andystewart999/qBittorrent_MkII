@@ -1,4 +1,11 @@
 # qBittorrent MkII
+[![Last release version](https://img.shields.io/github/v/release/andystewart999/qBitorrent_MkII)](https://github.com/andystewart999/qBitorrent_MkII/releases)
+[![Last release date](https://img.shields.io/github/release-date/andystewart999/qBitorrent_MkII)](https://github.com/andystewart999/qBitorrent_MkII/releases)
+[![Contributors](https://img.shields.io/github/contributors/andystewart999/qBitorrent_MkII)](https://github.com/andystewart999/qBitorrent_MkII/graphs/contributors)
+[![Project license](https://img.shields.io/github/license/andystewart999/qBitorrent_MkII)](https://github.com/andystewart999/qBitorrent_MkII/blob/master/LICENSE)
+![hacs](https://img.shields.io/badge/hacs-standard_installation-darkorange.svg)
+![type](https://img.shields.io/badge/type-custom_component-forestgreen.svg)
+
 Enhanced version of Home Assistant's built-in qBittorrent integration
 
 Adds the following features:
