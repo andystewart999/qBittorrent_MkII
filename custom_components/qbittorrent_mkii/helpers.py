@@ -20,8 +20,6 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-all_torrents_prev = []
-
 def setup_client(url: str, username: str, password: str, verify_ssl: bool):
     # Errors raised will be captured by the calling function
 
@@ -75,10 +73,8 @@ def get_version(client: Client):
         return None
 
 # Compare the list of torrents with the last check, looking for newly added, removed and completed torrents
-def compare_torrents(client: Client):
-    #Return a list containing all changed torrents and their new state
-    global all_torrents_prev
-    
+def compare_torrents(client: Client, all_torrents_prev: list):
+    #Return lists containing all changed torrents and their new state, plus the current list for the next comparison
     completed_torrents= []
     added_torrents= []
     removed_torrents = []
@@ -117,9 +113,7 @@ def compare_torrents(client: Client):
             if new_torrent is None:
                 added_torrents.append(torrent)
 
-    all_torrents_prev = all_torrents
- 
-    return completed_torrents, added_torrents, removed_torrents
+    return completed_torrents, added_torrents, removed_torrents, all_torrents
 
 # Pause the targeted torrent(s)
 def pause_downloads(client: Client, hash: str):
@@ -128,7 +122,7 @@ def pause_downloads(client: Client, hash: str):
             client.torrents_pause(hash)
 
         except Exception as err:
-            LOGGER.warn(f"Unable to pause torrent '{hash}'")
+            LOGGER.warning(f"Unable to pause torrent '{hash}'")
     else:
         client.torrents_pause('all')
     
@@ -140,7 +134,7 @@ def resume_downloads(client: Client, hash: str):
             client.torrents_resume(hash)
 
         except Exception as err:
-            LOGGER.warn(f"Unable to resume torrent '{hash}'")
+            LOGGER.warning(f"Unable to resume torrent '{hash}'")
     else:
         client.torrents_resume('all')
     
@@ -152,7 +146,7 @@ def delete_torrent(client: Client, hash: str, delete_files: bool):
             client.torrents_delete(delete_files, hash)
 
         except Exception as err:
-            LOGGER.warn(f"Unable to delete torrent '{hash}'")
+            LOGGER.warning(f"Unable to delete torrent '{hash}'")
 
 # Return an array of torrent information based on the provided criteria
 def get_torrent_info(client: Client, hash: str = None, status_filter: str = "all"):
@@ -182,7 +176,7 @@ def get_torrent_info(client: Client, hash: str = None, status_filter: str = "all
         }
 
     except Exception as err:
-            LOGGER.warn(f"Unable to get info for torrent '{hash}' with status_filter {status_filter}")
+            LOGGER.warning(f"Unable to get info for torrent '{hash}' with status_filter {status_filter}")
 
             return {}
 
