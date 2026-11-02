@@ -24,9 +24,6 @@ class QBEvents:
         # Torrent list from the last successful check, kept per config entry
         self.torrents_prev = []
 
-        # Used to log a connection failure once, rather than on every check
-        self.available = True
-
 
     # This function is called periodically as per the ConfigFlow value
     async def raise_events(self, now=None):
@@ -37,15 +34,10 @@ class QBEvents:
             )
 
         except Exception as ex:
-            if self.available:
-                LOGGER.warning(f"Error {ex} attempting to check {self.config_entry.title} for torrent events")
-                self.available = False
+            # Connection failures are already logged once by the sensor coordinator, which polls the same client
+            LOGGER.debug(f"Error {ex} attempting to check {self.config_entry.title} for torrent events")
 
             return
-
-        if not self.available:
-            LOGGER.info(f"Torrent event checks for {self.config_entry.title} have recovered")
-            self.available = True
 
         #Has anything changed that we care about?  Raise events as required
         if completed_torrents and self.config_entry.options.get(CONF_EVENT_COMPLETE, DEFAULT_EVENT_COMPLETE):

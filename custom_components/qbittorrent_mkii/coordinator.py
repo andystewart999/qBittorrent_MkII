@@ -57,4 +57,5 @@ class QBittorrentDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise ConfigEntryAuthFailed(f"Invalid credentials") from ex
 
         except Exception as ex:
-            raise UpdateFailed(f"Error {ex} attempting to retrieve data") from ex
+            # The coordinator prefixes this with "Error fetching <title> data: "
+            raise UpdateFailed(str(ex)) from ex
